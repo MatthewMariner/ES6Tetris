@@ -1,6 +1,6 @@
 /*
 *
-*	Variables
+*	Tetris game made using HTML5 Canvas, utilizing ES6 JavaScript.
 *
 */
 
@@ -22,14 +22,20 @@ var tetrisJS = {
             this.bindUIActions();
         },
 
+        /*
+        *
+        *		Utility Functions
+        *
+        */
+
 
 	    bindUIActions: function() {
-	            // Console Logs For Test
-	             document.addEventListener('keydown', this.listenerEvent);
+            // Controls
+            document.addEventListener('keydown', this.listenerEvent);
 	    },
 
 		collide: function(arena, player) {
-
+			// Collision detection
 		    const m = player.matrix;
 		    const o = player.pos;
 		    for (let y = 0; y < m.length; ++y) {
@@ -45,13 +51,11 @@ var tetrisJS = {
 		},
 
 		createMatrix: function(w, h) {
-
 		    const matrix = [];
 		    while (h--) {
 		        matrix.push(new Array(w).fill(0));
 		    }
 		    return matrix;
-
 		},
 
 	    listenerEvent: function() {
@@ -108,44 +112,6 @@ var tetrisJS = {
 		        matrix.reverse();
 		    }
 		},
-
-
-		playerDrop: function() {
-		    player.pos.y++;
-		    if (tetrisJS.collide(arena, player)) {
-		        player.pos.y--;
-		        tetrisJS.merge(arena, player);
-		        tetrisJS.playerReset();
-		        tetrisJS.arenaSweep();
-		        tetrisJS.updateScore();
-		    }
-		    dropCounter = 0;
-		},
-
-		playerMove: function(offset) {
-		    player.pos.x += offset;
-		    if (tetrisJS.collide(arena, player)) {
-		        player.pos.x -= offset;
-		    }
-		},
-
-		playerRotate: function(dir) {
-		    const pos = player.pos.x;
-		    let offset = 1;
-		    tetrisJS.rotate(player.matrix, dir);
-		    while (tetrisJS.collide(arena, player)) {
-		        player.pos.x += offset;
-		        offset = -(offset + (offset > 0 ? 1 : -1));
-		        if (offset > player.matrix[0].length) {
-		            tetrisJS.rotate(player.matrix, -dir);
-		            player.pos.x = pos;
-		            return;
-		        }
-		    }
-		},
-
-
-	
 
 		update: function(time = 0) {
 		    const deltaTime = time - lastTime;
@@ -241,6 +207,47 @@ var tetrisJS = {
 		        });
 		    });
 		},
+		
+		/*
+		*
+		*		Player Oriented Functions
+		*
+		*/
+
+
+		playerDrop: function() {
+		    player.pos.y++;
+		    if (tetrisJS.collide(arena, player)) {
+		        player.pos.y--;
+		        tetrisJS.merge(arena, player);
+		        tetrisJS.playerReset();
+		        tetrisJS.arenaSweep();
+		        tetrisJS.updateScore();
+		    }
+		    dropCounter = 0;
+		},
+
+		playerMove: function(offset) {
+		    player.pos.x += offset;
+		    if (tetrisJS.collide(arena, player)) {
+		        player.pos.x -= offset;
+		    }
+		},
+
+		playerRotate: function(dir) {
+		    const pos = player.pos.x;
+		    let offset = 1;
+		    tetrisJS.rotate(player.matrix, dir);
+		    while (tetrisJS.collide(arena, player)) {
+		        player.pos.x += offset;
+		        offset = -(offset + (offset > 0 ? 1 : -1));
+		        if (offset > player.matrix[0].length) {
+		            tetrisJS.rotate(player.matrix, -dir);
+		            player.pos.x = pos;
+		            return;
+		        }
+		    }
+		},
 
 		playerReset: function() {
 		    const pieces = 'TJLOSZI';
@@ -257,28 +264,25 @@ var tetrisJS = {
 
 }
 
-
-
-const arena = tetrisJS.createMatrix(12, 20);
-
-const canvas = document.getElementById('tetris');
-const context = canvas.getContext('2d');
-
-context.scale(2, 2);
+const arena = tetrisJS.createMatrix(12, 20),
+ 	  canvas = document.getElementById('tetris'),
+	  context = canvas.getContext('2d'),
+	  colors = [
+	    null,
+	    '#FF0D72',
+	    '#0DC2FF',
+	    '#0DFF72',
+	    '#F538FF',
+	    '#FF8E0D',
+	    '#FFE138',
+	    '#3877FF',
+	];
 
 let dropCounter = 0,
 	dropInterval = 1000,
 	lastTime = 0;
 
-const colors = [
-    null,
-    '#FF0D72',
-    '#0DC2FF',
-    '#0DFF72',
-    '#F538FF',
-    '#FF8E0D',
-    '#FFE138',
-    '#3877FF',
-];
-
+// Scales the canvas to make it full width
+context.scale(20, 20);
+// Initializes the game object
 tetrisJS.init();
